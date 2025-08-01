@@ -5,9 +5,6 @@ import type { SignInFormData } from "./pages/SignIn";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const register = async (formData: RegisterFormData) => {
-    console.log("API_BASE_URL:", API_BASE_URL); // Debug log
-    console.log("Full URL:", `${API_BASE_URL}/api/users/register`); // Debug log
-    
     const response = await fetch(`${API_BASE_URL}/api/users/register`, {
         method: "POST",
         credentials: "include",
@@ -58,9 +55,7 @@ export const validateToken =async()=>{
     }
   }
   export const addMyHotel = async (hotelFormData: FormData) => {
-    console.log("API_BASE_URL:", API_BASE_URL); // Debug log
-    console.log("Full URL:", `${API_BASE_URL}/api/my-hotels`); // Debug log
-    console.log("FormData contents:"); // Debug log
+    
     for (let [key, value] of hotelFormData.entries()) {
       console.log(`${key}:`, value);
     }
@@ -72,12 +67,11 @@ export const validateToken =async()=>{
         body: hotelFormData,
       });
     
-      console.log("Response status:", response.status); // Debug log
-      console.log("Response headers:", response.headers); // Debug log
+      
     
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("Error response:", errorText); // Debug log
+        
         
         let errorMessage = "Failed to add hotel";
         try {
@@ -91,10 +85,10 @@ export const validateToken =async()=>{
       }
     
       const result = await response.json();
-      console.log("Success response:", result); // Debug log
+     
       return result;
     } catch (error) {
-      console.error("Fetch error:", error); // Debug log
+      
       throw error;
     }
   };
