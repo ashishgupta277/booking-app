@@ -102,14 +102,23 @@ try{
     console.log("Processed hotel data:", newHotel);
     console.log("Image files count:", imageFiles ? imageFiles.length : 0);
 
-    const uploadPromises = imageFiles.map(async(image)=>{
-        const b64 = Buffer.from(image.buffer).toString("base64");
-        let dataURI= "data:" + image.mimetype + ";base64," + b64;
-        const res = await cloudinary.v2.uploader.upload(dataURI);
-         return res.url;
-
-    });
-        const imageUrls = await Promise.all(uploadPromises);
+    let imageUrls: string[] = [];
+    
+    if (imageFiles && imageFiles.length > 0) {
+        try {
+            const uploadPromises = imageFiles.map(async(image)=>{
+                const b64 = Buffer.from(image.buffer).toString("base64");
+                let dataURI= "data:" + image.mimetype + ";base64," + b64;
+                const res = await cloudinary.v2.uploader.upload(dataURI);
+                return res.url;
+            });
+            imageUrls = await Promise.all(uploadPromises);
+        } catch (cloudinaryError) {
+            console.log("Cloudinary upload error:", cloudinaryError);
+            // Continue without images if Cloudinary fails
+            imageUrls = [];
+        }
+    }
                  newHotel.imageUrls = imageUrls;
          newHotel.lastUpdated = new Date();
          
