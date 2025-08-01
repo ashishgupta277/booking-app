@@ -48,7 +48,7 @@ const SignIn = () =>{
       mutation.mutate(data);
      });
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 flex justify-center py-8">
         <form
           className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 border border-gray-100 space-y-6"
           onSubmit={onSubmit}

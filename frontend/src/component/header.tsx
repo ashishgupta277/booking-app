@@ -42,12 +42,14 @@ const Header = () => {
                                         Sign In
                                     </Link>
                                 </span>
+                                <span className="flex space-x-2">
                                 <Link 
                                     to="/register" 
                                     className="bg-gradient-to-r from-white to-emerald-50 text-emerald-700 px-6 py-2 rounded-lg font-semibold hover:from-emerald-50 hover:to-white transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg"
                                 >
                                     Sign Up
                                 </Link>
+                                </span>
                             </>
                         )}
                     </div>
