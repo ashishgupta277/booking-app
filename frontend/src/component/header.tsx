@@ -16,13 +16,13 @@ const Header = () => {
                         {isLoggedIn ? (
                             <>
                                 <Link 
-                                    to="my-bookings"
+                                    to="/my-bookings"
                                     className="bg-white/10 backdrop-blur-sm text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-500/20 border border-white/20 transition-all duration-300 hover:scale-105 hover:shadow-lg"
                                 >
                                     My Bookings
                                 </Link>
                                 <Link 
-                                    to="my-hotels"
+                                    to="/my-hotels"
                                     className="bg-white/10 backdrop-blur-sm text-white px-6 py-2 rounded-lg font-semibold hover:bg-cyan-500/20 border border-white/20 transition-all duration-300 hover:scale-105 hover:shadow-lg"
                                 >
                                     My Hotels

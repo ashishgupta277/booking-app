@@ -159,4 +159,138 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
       res.status(500).json({ message: "Error fetching hotels" });
     }
   });
+
+  router.get("/:id", verifyToken, async (req: Request, res: Response) => {
+    const id = req.params.id.toString();
+    try {
+      const hotel = await Hotel.findOne({
+        _id: id,
+        userId: req.userId,
+      });
+      res.json(hotel);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching hotels" });
+    }
+  });
+
+  router.put("/:id", verifyToken, upload.array("imageFiles", 6), async (req: Request, res: Response): Promise<void> => {
+    try {
+      const hotelId = req.params.id;
+      console.log("=== HOTEL UPDATE REQUEST ===");
+      console.log("Hotel ID:", hotelId);
+      console.log("Raw request body:", req.body);
+      console.log("Files received:", req.files);
+      
+      const imageFiles = req.files as Express.Multer.File[];
+      const updateData: any = req.body;
+      
+      // Validate required fields
+      const requiredFields = ['name', 'city', 'country', 'description', 'type', 'pricePerNight', 'starRating', 'adultCount', 'childCount'];
+      const missingFields = requiredFields.filter(field => !updateData[field]);
+      
+      if (missingFields.length > 0) {
+        res.status(400).json({ 
+          message: "Missing required fields", 
+          missingFields 
+        });
+        return;
+      }
+      
+      // Parse facilities from FormData
+      let facilities: string[] = [];
+      
+      if (req.body.facilities) {
+        try {
+          if (Array.isArray(req.body.facilities)) {
+            facilities = req.body.facilities;
+          } else {
+            facilities = JSON.parse(req.body.facilities);
+          }
+        } catch (error) {
+          console.log("Error parsing facilities:", error);
+        }
+      }
+      
+      if (facilities.length === 0) {
+        Object.keys(req.body).forEach(key => {
+          if (key.startsWith('facilities[')) {
+            facilities.push(req.body[key]);
+          }
+        });
+      }
+      
+      if (facilities.length === 0) {
+        res.status(400).json({ 
+          message: "At least one facility is required" 
+        });
+        return;
+      }
+      
+      updateData.facilities = facilities;
+      
+      // Ensure numeric fields are numbers
+      updateData.pricePerNight = Number(updateData.pricePerNight);
+      updateData.starRating = Number(updateData.starRating);
+      updateData.adultCount = Number(updateData.adultCount);
+      updateData.childCount = Number(updateData.childCount);
+      
+      let imageUrls: string[] = [];
+      
+      // First, get existing image URLs from the request
+      if (req.body.imageUrls) {
+        try {
+          if (Array.isArray(req.body.imageUrls)) {
+            imageUrls = req.body.imageUrls;
+          } else {
+            // Handle case where imageUrls might be sent as individual fields
+            Object.keys(req.body).forEach(key => {
+              if (key.startsWith('imageUrls[')) {
+                imageUrls.push(req.body[key]);
+              }
+            });
+          }
+        } catch (error) {
+          console.log("Error parsing existing image URLs:", error);
+        }
+      }
+      
+      // Then, upload new images and add them to the existing ones
+      if (imageFiles && imageFiles.length > 0) {
+        try {
+          const uploadPromises = imageFiles.map(async(image) => {
+            const b64 = Buffer.from(image.buffer).toString("base64");
+            let dataURI = "data:" + image.mimetype + ";base64," + b64;
+            const res = await cloudinary.v2.uploader.upload(dataURI);
+            return res.url;
+          });
+          const newImageUrls = await Promise.all(uploadPromises);
+          imageUrls = [...imageUrls, ...newImageUrls]; // Merge existing and new images
+        } catch (cloudinaryError) {
+          console.log("Cloudinary upload error:", cloudinaryError);
+          // Keep existing images even if new upload fails
+        }
+      }
+      
+      updateData.imageUrls = imageUrls;
+      updateData.lastUpdated = new Date();
+      
+      const hotel = await Hotel.findOneAndUpdate(
+        { _id: hotelId, userId: req.userId },
+        updateData,
+        { new: true }
+      );
+      
+      if (!hotel) {
+        res.status(404).json({ message: "Hotel not found" });
+        return;
+      }
+      
+      res.json(hotel);
+      
+    } catch (error) {
+      console.log("Error updating hotel:", error);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  });
+
 export default router;

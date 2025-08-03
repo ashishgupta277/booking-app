@@ -4,6 +4,8 @@ import TypeSection from "./TypeSection";
 import FacilitiesSection from "./FacilitiesSection";
 import GuestsSection from "./GuestSection";
 import ImagesSection from "./ImagesSection";
+import type { HotelType } from "../../types/hotel";
+import { useEffect } from "react";
 
 export type HotelFormData = {
     name: string;
@@ -20,11 +22,12 @@ export type HotelFormData = {
     childCount: number;
   };
   type Props = {
+    hotel: HotelType
     onSave: (hotelFormData: FormData) => void;
     isLoading: boolean;
   };
 
-const ManageHotelForm =({onSave, isLoading} : Props)=>{
+const ManageHotelForm =({onSave, isLoading, hotel} : Props)=>{
     const formMethods = useForm<HotelFormData>({
       defaultValues: {
         name: "",
@@ -39,7 +42,10 @@ const ManageHotelForm =({onSave, isLoading} : Props)=>{
         childCount: 0,
       }
     });
-    const {handleSubmit}= formMethods;
+    const {handleSubmit,reset}= formMethods;
+    useEffect(()=>{ reset(hotel);
+    },[hotel,reset]);
+    
     const onSubmit = handleSubmit((formDataJson: HotelFormData)=>{
       console.log(formDataJson);
       console.log("Form data before submission:", formDataJson);
@@ -52,6 +58,9 @@ const ManageHotelForm =({onSave, isLoading} : Props)=>{
       }
       
       const formData = new FormData();
+      if(hotel){
+        formData.append("hotelId", hotel._id);
+      }
       formData.append("name", formDataJson.name || "");
       formData.append("city", formDataJson.city || "");
       formData.append("country", formDataJson.country || "");
@@ -101,7 +110,7 @@ const ManageHotelForm =({onSave, isLoading} : Props)=>{
     <GuestsSection/>
     <ImagesSection/>
     <span className="flex justify-end">
-  <button
+   <button
   disabled={isLoading}
     type="submit"
     className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:bg-gray-500 disabled:cursor-not-allowed disabled:transform-none"
