@@ -1,10 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import * as apiClient from '../api-client';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useAppContext } from "../contexts/AppContext";
 import { useQueryClient } from "@tanstack/react-query";
+
 
 export type SignInFormData ={
     email:string;
@@ -14,6 +15,7 @@ const SignIn = () =>{
   const queryClient = useQueryClient();
   const {showToast}= useAppContext();
   const navigate = useNavigate();
+  const location = useLocation();
  
     const {register,
         formState:{errors},
@@ -24,10 +26,10 @@ const SignIn = () =>{
     mutationFn: apiClient.signIn,
     onSuccess: async () => {
       showToast({
-        message: "sign in sucessfull", type : "success"
+        message: "Sign in sucessfull", type : "success"
       });
       await queryClient.invalidateQueries({ queryKey: ["validateToken"] });
-      navigate ("/");
+      navigate (location.state?.from?.pathname ||"/");
       console.log("user have signed in");
       setApiError(null);
     },
