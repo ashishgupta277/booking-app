@@ -22,7 +22,7 @@ export type HotelFormData = {
     childCount: number;
   };
   type Props = {
-    hotel: HotelType
+    hotel?: HotelType
     onSave: (hotelFormData: FormData) => void;
     isLoading: boolean;
   };
@@ -43,7 +43,10 @@ const ManageHotelForm =({onSave, isLoading, hotel} : Props)=>{
       }
     });
     const {handleSubmit,reset}= formMethods;
-    useEffect(()=>{ reset(hotel);
+    useEffect(()=>{ 
+      if (hotel) {
+        reset(hotel);
+      }
     },[hotel,reset]);
     
     const onSubmit = handleSubmit((formDataJson: HotelFormData)=>{
@@ -58,7 +61,7 @@ const ManageHotelForm =({onSave, isLoading, hotel} : Props)=>{
       }
       
       const formData = new FormData();
-      if(hotel){
+      if(hotel && hotel._id){
         formData.append("hotelId", hotel._id);
       }
       formData.append("name", formDataJson.name || "");
