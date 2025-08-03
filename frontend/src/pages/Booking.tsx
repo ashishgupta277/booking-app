@@ -52,28 +52,30 @@ const Booking = () => {
   }
 
   return (
-    <div className="grid md:grid-cols-[1fr_2fr]">
-      <BookingDetailsSummary
-        checkIn={search.checkIn}
-        checkOut={search.checkOut}
-        adultCount={search.adultCount}
-        childCount={search.childCount}
-        numberOfNights={numberOfNights}
-        hotel={hotel}
-      />
-      {currentUser && paymentIntentData && (
-        <Elements
-          stripe={stripePromise}
-          options={{
-            clientSecret: paymentIntentData.clientSecret,
-          }}
-        >
-          <BookingForm
-            currentUser={currentUser}
-            paymentIntent={paymentIntentData}
-          />
-        </Elements>
-      )}
+    <div className="min-h-[70vh] flex items-center justify-center py-12 bg-gradient-to-br from-blue-50 via-cyan-50 to-emerald-50">
+      <div className="w-full max-w-5xl grid md:grid-cols-[1fr_2fr] gap-8 bg-white/90 rounded-2xl shadow-xl p-6">
+        <BookingDetailsSummary
+          checkIn={search.checkIn}
+          checkOut={search.checkOut}
+          adultCount={search.adultCount}
+          childCount={search.childCount}
+          numberOfNights={numberOfNights}
+          hotel={hotel}
+        />
+        {currentUser && paymentIntentData && (
+          <Elements
+            stripe={stripePromise}
+            options={{
+              clientSecret: paymentIntentData.clientSecret,
+            }}
+          >
+            <BookingForm
+              currentUser={currentUser}
+              paymentIntent={paymentIntentData}
+            />
+          </Elements>
+        )}
+      </div>
     </div>
   );
 };
