@@ -1,0 +1,15 @@
+// vercel.json
+{
+  "builds": [
+    {
+      "src": "index.js",         // or index.ts if using TypeScript
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.ts"        // or /index.ts
+    }
+  ]
+}
