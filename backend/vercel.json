@@ -1,15 +1,14 @@
-// vercel.json
 {
   "builds": [
     {
-      "src": "index.ts",         // or index.ts if using TypeScript
+      "src": "dist/index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/index.ts"        // or /index.ts
+      "dest": "/dist/index.js"
     }
   ]
 }
