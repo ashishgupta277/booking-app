@@ -38,7 +38,9 @@ cloudinary.config({
  
  app.get("*", (req: Request,res: Response)=>{
   res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+  res.send("Hello from backend");
  })
+ 
 
 app.listen(8000 , () =>{console.log("server is runn on 8000");
 
